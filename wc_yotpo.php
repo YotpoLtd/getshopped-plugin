@@ -102,30 +102,7 @@ function gs_yotpo_uninstall() {
 }
 
 function gs_yotpo_show_widget() {
-	$productId = wpsc_the_product_id();
-	$product = get_post($productId);
-	if ( $product->comment_status == 'open' ) {
-		$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
-		
-		$productTitle = get_the_title($productId);
-		$productDescription = wpsc_the_product_description();
-		$productUrl = wpsc_this_page_url();
-		$productSku = array_pop(get_product_meta($productId, 'sku'));
-		$domain = gs_yotpo_get_shop_domain();
-	
-		$yotpo_div = "<div class='yotpo reviews' 
-					data-appkey='".$yotpo_settings['app_key']."'
-					data-domain='".$domain."'
-					data-product-id='".$productId."'
-					data-product-models='".$productSku."'
-					data-name='".$productTitle."' 
-					data-url='".$productUrl."' 
-					data-image-url='".wpsc_the_product_image()."' 
-					data-description='".$productDescription."' 
-					data-bread-crumbs=''
-					data-lang='".$yotpo_settings['language_code']."'></div>";
-		echo $yotpo_div;
-	}
+	echo gs_yotpo_template('reviews');
 }
 
 function gs_yotpo_show_widget_in_tab($tabs) {
@@ -148,24 +125,35 @@ function gs_yotpo_load_js() {
 }
 
 function gs_yotpo_show_buttomline() {
-	$product = get_product();
-	$show_bottom_line = is_product() ? comments_open($product->id) : true;
-	if($show_bottom_line) {
-		$product_data = gs_yotpo_get_product_data($product);	
-		$yotpo_div = "</br><div class='yotpo bottomLine' 
-					data-appkey='".$product_data['app_key']."'
-					data-domain='".$product_data['shop_domain']."'
-					data-product-id='".$product_data['id']."'
-					data-product-models='".$product_data['product-models']."'
-					data-name='".$product_data['title']."' 
-					data-url='".$product_data['url']."' 
-					data-image-url='".$product_data['image-url']."' 
-					data-description='".$product_data['description']."' 
+	echo gs_yotpo_template('bottomLine');			
+}
+
+function gs_yotpo_template($type) {
+	$productId = wpsc_the_product_id();
+	$product = get_post($productId);
+	if ( $product->comment_status == 'open' ) {
+		$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
+		
+		$productTitle = get_the_title($productId);
+		$productDescription = wpsc_the_product_description();
+		$productUrl = wpsc_this_page_url();
+		$productSku = array_pop(get_product_meta($productId, 'sku'));
+		$domain = gs_yotpo_get_shop_domain();
+		
+		$yotpo_div = "<div class='yotpo ".$type."' 
+					data-appkey='".$yotpo_settings['app_key']."'
+					data-domain='".$domain."'
+					data-product-id='".$productId."'
+					data-product-models='".$productSku."'
+					data-name='".$productTitle."' 
+					data-url='".$productUrl."' 
+					data-image-url='".wpsc_the_product_image()."' 
+					data-description='".$productDescription."' 
 					data-bread-crumbs=''
-					data-lang='".$product_data['lang']."'></div>";
-		echo $yotpo_div;	
-	}	
-				
+					data-lang='".$yotpo_settings['language_code']."'></div>";
+		return $yotpo_div;
+	}
+	return '';
 }
 
 function gs_yotpo_get_product_data($product) {	
