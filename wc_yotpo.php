@@ -28,7 +28,7 @@ function gs_yotpo_init() {
 			add_action( 'template_redirect', 'gs_yotpo_front_end_init', 1);	
 		}				
 		elseif(!empty($yotpo_settings['secret'])) {
-			// add_action( 'woocommerce_order_status_completed', 'gs_yotpo_map');	TODO find the action to hook to in get shopped
+			add_action('wpsc_purchase_log_save', 'gs_yotpo_map');
 		}				
 	}			
 }
@@ -191,22 +191,30 @@ function gs_yotpo_remove_native_review_system($open, $post_id) {
 }
 
 function gs_yotpo_map($order_id) {
-	try {
-			$purchase_data = gs_yotpo_get_single_map_data($order_id);
-			if(!is_null($purchase_data) && is_array($purchase_data)) {
-				$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
-				$yotpo_api = new Yotpo($yotpo_settings['app_key'], $yotpo_settings['secret']);
-				$get_oauth_token_response = $yotpo_api->get_oauth_token();
-				if(!empty($get_oauth_token_response) && !empty($get_oauth_token_response['access_token'])) {
-					$purchase_data['utoken'] = $get_oauth_token_response['access_token'];
-					$purchase_data['platform'] = 'getshopped';
-					$response = $yotpo_api->create_purchase($purchase_data);			
-			}
-		}		
+
+	if ($order_id->is_closed_order()) {
+		// order status is "closed order" - TODO need to check with Omer if this is the only status we want to send purchases for
+		throw new Exception('aaaaasd3424');	
+	} else {
+
 	}
-	catch (Exception $e) {
-		error_log($e->getMessage());
-	}
+	
+	// try {
+	// 		$purchase_data = gs_yotpo_get_single_map_data($order_id);
+	// 		if(!is_null($purchase_data) && is_array($purchase_data)) {
+	// 			$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
+	// 			$yotpo_api = new Yotpo($yotpo_settings['app_key'], $yotpo_settings['secret']);
+	// 			$get_oauth_token_response = $yotpo_api->get_oauth_token();
+	// 			if(!empty($get_oauth_token_response) && !empty($get_oauth_token_response['access_token'])) {
+	// 				$purchase_data['utoken'] = $get_oauth_token_response['access_token'];
+	// 				$purchase_data['platform'] = 'getshopped';
+	// 				$response = $yotpo_api->create_purchase($purchase_data);			
+	// 		}
+	// 	}		
+	// }
+	// catch (Exception $e) {
+	// 	error_log($e->getMessage());
+	// }
 }
 
 function gs_yotpo_get_single_map_data($order_id) {
