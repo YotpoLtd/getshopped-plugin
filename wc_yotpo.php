@@ -102,7 +102,7 @@ function gs_yotpo_uninstall() {
 }
 
 function gs_yotpo_show_widget() {
-	echo gs_yotpo_template('reviews');
+	echo gs_yotpo_get_template('reviews');
 }
 
 function gs_yotpo_show_widget_in_tab($tabs) {
@@ -125,10 +125,10 @@ function gs_yotpo_load_js() {
 }
 
 function gs_yotpo_show_bottomline() {
-	echo gs_yotpo_template('bottomLine');			
+	echo gs_yotpo_get_template('bottomLine');			
 }
 
-function gs_yotpo_template($type) {
+function gs_yotpo_get_template($type) {
 	$productId = wpsc_the_product_id();
 	$product = get_post($productId);
 	if ( $product->comment_status == 'open' ) {
