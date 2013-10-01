@@ -7,6 +7,7 @@
 	Author URI: http://www.yotpo.com?utm_source=yotpo_plugin_woocommerce&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link	
 	Plugin URI: http://www.yotpo.com?utm_source=yotpo_plugin_woocommerce&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link
  */
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 register_activation_hook(   __FILE__, 'gs_yotpo_activation' );
 register_uninstall_hook( __FILE__, 'gs_yotpo_uninstall' );
 register_deactivation_hook( __FILE__, 'gs_yotpo_deactivate' );
@@ -53,11 +54,11 @@ function gs_yotpo_front_end_init() {
 
 		$widget_location = $settings['widget_location'];	
 		if($settings['disable_native_review_system']) {
-			// add_filter( 'comments_open', 'wc_yotpo_remove_native_review_system', null, 2);	TODO how to remove default reviews system. is it wordpress system or woocommerce???		
+			add_filter('comments_open', 'gs_yotpo_remove_native_review_system', null, 2);
 		}						
 		if($widget_location == 'footer') {		
-			var_dump('hello');
-			add_action('wpsc_product_before_description', 'gs_yotpo_show_widget', 10);
+			// var_dump('hello');
+			add_action('wpsc_theme_footer', 'gs_yotpo_show_widget', 10);
 			// add_action('woocommerce_after_single_product', 'wc_yotpo_show_widget', 10);  TODO find the appropriate action to show the widget in
 		}
 		elseif($widget_location == 'tab') {
@@ -78,8 +79,8 @@ function gs_yotpo_activation() {
 	// add_action('wpsc_edit_order_status', 'test_map'); // TODO find appropriate action to send map
 	if(current_user_can( 'activate_plugins' )) {
 		update_option('gs_yotpo_just_installed', true);
-	    $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
-    	check_admin_referer( "activate-plugin_{$plugin}" );
+		$plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
+		check_admin_referer( "activate-plugin_{$plugin}" );
 		$default_settings = get_option('yotpo_settings', false);
 		if(!is_array($default_settings)) {
 			add_option('yotpo_settings', gs_yotpo_get_default_settings());
@@ -100,62 +101,50 @@ function gs_yotpo_uninstall() {
 	}	
 }
 
-function gs_yotpo_show_widget($arg1) {
-	// var_dump($arg1);	
-
-	// $product = get_post($arg1);
-	// var_dump($product);
+function gs_yotpo_show_widget() {
 	$productId = wpsc_the_product_id();
-	$productDescription = wpsc_the_product_description();
-	$productUrl = wpsc_this_page_url();
-	$productSku = get_product_meta($productId, 'sku');
-	$domain = gs_yotpo_get_shop_domain();
-
-
-
-
-	// var_dump(get_domain_name());
-	// var_dump(get_product_meta( $arg1, 'external_link', true ));
-
-	// $product = get_product();
-	// if($product->post->comment_status == 'open') {		
-	// 	$product_data = gs_yotpo_get_product_data($product);	
-	// 	$yotpo_div = "<div class='yotpo reviews' 
-	//  				data-appkey='".$product_data['app_key']."'
-	//    				data-domain='".$product_data['shop_domain']."'
-	//    				data-product-id='".$product_data['id']."'
-	//    				data-product-models='".$product_data['product-models']."'
-	//    				data-name='".$product_data['title']."' 
-	//    				data-url='".$product_data['url']."' 
-	//    				data-image-url='".$product_data['image-url']."' 
-	//   				data-description='".$product_data['description']."' 
-	//   				data-bread-crumbs=''
-	//   				data-lang='".$product_data['lang']."'></div>";
-	// 	echo $yotpo_div;
-	// }						
+	$product = get_post($productId);
+	if ( $product->comment_status == 'open' ) {
+		$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
+		
+		$productTitle = get_the_title($productId);
+		$productDescription = wpsc_the_product_description();
+		$productUrl = wpsc_this_page_url();
+		$productSku = array_pop(get_product_meta($productId, 'sku'));
+		$domain = gs_yotpo_get_shop_domain();
+	
+		$yotpo_div = "<div class='yotpo reviews' 
+					data-appkey='".$yotpo_settings['app_key']."'
+					data-domain='".$domain."'
+					data-product-id='".$productId."'
+					data-product-models='".$productSku."'
+					data-name='".$productTitle."' 
+					data-url='".$productUrl."' 
+					data-image-url='".wpsc_the_product_image()."' 
+					data-description='".$productDescription."' 
+					data-bread-crumbs=''
+					data-lang='".$yotpo_settings['language_code']."'></div>";
+		echo $yotpo_div;
+	}
 }
 
 function gs_yotpo_show_widget_in_tab($tabs) {
 	$product = get_product();
 	if($product->post->comment_status == 'open') {
 		$settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
-	 	$tabs['yotpo_widget'] = array(
-	 	'title' => $settings['widget_tab_name'],
-	 	'priority' => 50,
-	 	'callback' => 'gs_yotpo_show_widget'
-	 	);
+		$tabs['yotpo_widget'] = array(
+		'title' => $settings['widget_tab_name'],
+		'priority' => 50,
+		'callback' => 'gs_yotpo_show_widget'
+		);
 	}
- 	return $tabs;		
+	return $tabs;		
 }
 
-function gs_yotpo_load_js(){
-	if(gs_yotpo_is_getshopped_installed()) {		
-    	wp_enqueue_script( 'yquery', 'https://www.yotpo.com/js/yQuery.js',null,null);    	
+function gs_yotpo_load_js() {
+	if (is_plugin_active('wp-e-commerce/wp-shopping-cart.php')) {
+		wp_enqueue_script('yquery', 'https://www.yotpo.com/js/yQuery.js');
 	}
-}
-
-function gs_yotpo_is_getshopped_installed() {
-	// return in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins'))); TODO implement same line for getshopped
 }
 
 function gs_yotpo_show_buttomline() {
@@ -164,16 +153,16 @@ function gs_yotpo_show_buttomline() {
 	if($show_bottom_line) {
 		$product_data = gs_yotpo_get_product_data($product);	
 		$yotpo_div = "</br><div class='yotpo bottomLine' 
-	   				data-appkey='".$product_data['app_key']."'
-	   				data-domain='".$product_data['shop_domain']."'
-	   				data-product-id='".$product_data['id']."'
-	   				data-product-models='".$product_data['product-models']."'
-	   				data-name='".$product_data['title']."' 
-	   				data-url='".$product_data['url']."' 
-	   				data-image-url='".$product_data['image-url']."' 
-	   				data-description='".$product_data['description']."' 
-	   				data-bread-crumbs=''
-	   				data-lang='".$product_data['lang']."'></div>";
+					data-appkey='".$product_data['app_key']."'
+					data-domain='".$product_data['shop_domain']."'
+					data-product-id='".$product_data['id']."'
+					data-product-models='".$product_data['product-models']."'
+					data-name='".$product_data['title']."' 
+					data-url='".$product_data['url']."' 
+					data-image-url='".$product_data['image-url']."' 
+					data-description='".$product_data['description']."' 
+					data-bread-crumbs=''
+					data-lang='".$product_data['lang']."'></div>";
 		echo $yotpo_div;	
 	}	
 				
@@ -207,7 +196,7 @@ function gs_yotpo_get_shop_domain() {
 }
 
 function gs_yotpo_remove_native_review_system($open, $post_id) {
-	if(get_post_type($post_id) == 'product') {
+	if ( get_post_type($post_id) == 'wpsc-product' ) {
 		return false;
 	}
 	return $open;
@@ -276,7 +265,7 @@ function gs_yotpo_get_past_orders() {
 	$result = null;
 	$args = array(
 		'post_type'			=> 'shop_order',
-        'posts_per_page' 	=> -1,
+		'posts_per_page' 	=> -1,
 		'tax_query' => array(
 			array(
 				'taxonomy' => 'shop_order_status',
@@ -368,11 +357,11 @@ function gs_yotpo_conversion_track($order_id) {
 	}
 	
 	$conversion_params = "app_key="      .$yotpo_settings['app_key'].
-           				 "&order_id="    .$order_id.
-           				 "&order_amount=".$order->get_total().
-           				 "&order_currency="  .$currency;
+						 "&order_id="    .$order_id.
+						 "&order_amount=".$order->get_total().
+						 "&order_currency="  .$currency;
 	echo "<img 
-   	src='https://api.yotpo.com/conversion_tracking.gif?$conversion_params'
+	src='https://api.yotpo.com/conversion_tracking.gif?$conversion_params'
 	width='1'
 	height='1'></img>";
 }
