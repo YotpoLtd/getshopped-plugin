@@ -1,0 +1,2 @@
+getshopped-plugin
+=================
