@@ -65,7 +65,7 @@ function gs_yotpo_front_end_init() {
 			// add_action('woocommerce_product_tabs', 'wc_yotpo_show_widget_in_tab');	TODO find the appropriate action to show widget in tab
 		}
 		if($settings['bottom_line_enabled_product']) {	
-			// add_action('woocommerce_single_product_summary', 'wc_yotpo_show_buttomline',7);	TODO find the appropriate action to show bottomline in product pages
+			add_filter('wpsc_the_product_price_display_price_class', 'gs_yotpo_show_bottomline');
 			wp_enqueue_style('yotpoSideBootomLineStylesheet', plugins_url('assets/css/bottom-line.css', __FILE__));
 		}			
 	}
@@ -124,7 +124,7 @@ function gs_yotpo_load_js() {
 	}
 }
 
-function gs_yotpo_show_buttomline() {
+function gs_yotpo_show_bottomline() {
 	echo gs_yotpo_template('bottomLine');			
 }
 
