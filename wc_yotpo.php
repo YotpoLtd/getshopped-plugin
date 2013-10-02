@@ -49,6 +49,11 @@ function gs_yotpo_admin_settings() {
 function gs_yotpo_front_end_init() {	
 	$settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
 	add_action('wpsc_transaction_results_shutdown', 'gs_yotpo_conversion_track');
+
+	if($settings['bottom_line_enabled_product']) {	
+		add_filter('wpsc_the_product_price_display_price_class', 'gs_yotpo_show_bottomline');
+		wp_enqueue_style('yotpoSideBootomLineStylesheet', plugins_url('assets/css/bottom-line.css', __FILE__));
+	}
 	
 	if (get_post_type() == 'wpsc-product'  && is_single()) {
 
@@ -64,10 +69,6 @@ function gs_yotpo_front_end_init() {
 		elseif($widget_location == 'tab') {
 			// add_action('woocommerce_product_tabs', 'wc_yotpo_show_widget_in_tab');	TODO find the appropriate action to show widget in tab
 		}
-		if($settings['bottom_line_enabled_product']) {	
-			add_filter('wpsc_the_product_price_display_price_class', 'gs_yotpo_show_bottomline');
-			wp_enqueue_style('yotpoSideBootomLineStylesheet', plugins_url('assets/css/bottom-line.css', __FILE__));
-		}			
 	}
 	elseif ($settings['bottom_line_enabled_category']) {
 		// add_action('woocommerce_after_shop_loop_item_title', 'wc_yotpo_show_buttomline',7);  TODO find the appropriate action to show the bottomline in category pages
@@ -135,7 +136,7 @@ function gs_yotpo_get_template($type) {
 		$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
 		
 		$productTitle = get_the_title($productId);
-		$productDescription = wpsc_the_product_description();
+		$productDescription = htmlentities(wpsc_the_product_description());
 		$productUrl = wpsc_this_page_url();
 		$productSku = array_pop(get_product_meta($productId, 'sku'));
 		$domain = gs_yotpo_get_shop_domain();
