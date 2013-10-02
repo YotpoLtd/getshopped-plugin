@@ -8,19 +8,17 @@
 	Plugin URI: http://www.yotpo.com?utm_source=yotpo_plugin_woocommerce&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link
  */
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+include_once( plugin_dir_path( __FILE__ ) . 'templates/gs-yotpo-settings.php' );
+include_once( plugin_dir_path( __FILE__ ) . 'lib/yotpo-api/Yotpo.php' );
 register_activation_hook(   __FILE__, 'gs_yotpo_activation' );
 register_uninstall_hook( __FILE__, 'gs_yotpo_uninstall' );
 register_deactivation_hook( __FILE__, 'gs_yotpo_deactivate' );
 add_action('plugins_loaded', 'gs_yotpo_init');
 add_action('init', 'gs_yotpo_redirect');
+add_action('admin_menu', 'gs_yotpo_admin_settings');
 		
 function gs_yotpo_init() {
 	$is_admin = is_admin();	
-	if($is_admin) {
-		include( plugin_dir_path( __FILE__ ) . 'templates/gs-yotpo-settings.php');
-		include(plugin_dir_path( __FILE__ ) . 'lib/yotpo-api/Yotpo.php');
-		add_action( 'admin_menu', 'gs_yotpo_admin_settings' );
-	}
 	$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
 	if(!empty($yotpo_settings['app_key']) && gs_yotpo_compatible()) {			
 		if(!$is_admin) {
@@ -41,9 +39,10 @@ function gs_yotpo_redirect() {
 	}	
 }
 
-function gs_yotpo_admin_settings() {
-	add_action( 'admin_enqueue_scripts', 'gs_yotpo_admin_styles' );	
-	$page = add_menu_page( 'Yotpo', 'Yotpo', 'manage_options', 'getshopped-yotpo-settings-page', 'gs_display_yotpo_admin_page', 'none', null );			
+function gs_yotpo_admin_settings() {	
+	add_action('admin_enqueue_scripts', 'gs_yotpo_admin_styles');
+	$page = add_menu_page('Yotpo', 'Yotpo', 'manage_options', 'getshopped-yotpo-settings-page', 'gs_display_yotpo_admin_page', 'none', null);
+	add_action('load-' . $page, 'gs_load_yotpo_admin_page', 1);
 }
 
 function gs_yotpo_front_end_init() {	

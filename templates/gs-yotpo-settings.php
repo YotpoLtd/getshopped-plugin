@@ -27,27 +27,6 @@ function gs_display_yotpo_admin_page() {
 		elseif (isset($_POST['yotpo_past_orders'])) {
 			gs_yotpo_send_past_orders();	
 			gs_display_yotpo_settings();
-		}	
-		elseif (isset($_POST['yotpo_export_reviews'])) {
-			$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
-			if(!empty($yotpo_settings['app_key'])) {					
-				include(dirname(plugin_dir_path( __FILE__ )) . '/classes/class-gs-yotpo-export-reviews.php');
-				$export = new Yotpo_Review_Export();
-				list($file, $errors) = $export->exportReviews();
-				if(is_null($errors)) {
-					$errors = $export->downloadReviewToBrowser($file);
-					if(!is_null($errors)) {
-						gs_yotpo_display_message($errors);
-					}	
-				}
-				else {
-					gs_yotpo_display_message($errors);
-				}	
-			}
-			else {
-				gs_yotpo_display_message('Please set up your API key before exporting reviews.');	
-			}	
-			gs_display_yotpo_settings();		
 		}
 		else {
 			$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
@@ -66,6 +45,19 @@ function gs_display_yotpo_admin_page() {
 		if(!function_exists('curl_init')) {
 			echo '<h1>Yotpo plugin requires cURL library.</h1><br>';
 		}			
+	}
+}
+
+function gs_load_yotpo_admin_page() {
+	if (isset($_REQUEST['action'])) {
+		switch ($_REQUEST['action']) {
+			case 'export_reviews':
+				gs_yotpo_export_reviews();
+				break;
+			
+			default:
+				break;
+		}
 	}
 }
 
@@ -154,7 +146,9 @@ function gs_display_yotpo_settings() {
 		           </fieldset>
 		         </table></br>			  		
 		         <div class='buttons-container'>
-		        <input type='submit' name='yotpo_export_reviews' value='Export Reviews' class='button-secondary' ".disabled(true,empty($app_key) || empty($secret), false)."/>
+			        <a class='button' href='" . esc_url(add_query_arg('action', 'export_reviews')) . "'>
+						<span>Export Reviews</span>
+					</a>
 				<input type='submit' name='yotpo_settings' value='Update' class='button-primary' id='save_yotpo_settings'/>$submit_past_orders_button
 			  </br></br><p class='description'>*Learn <a href='http://support.yotpo.com/entries/24454261-Exporting-reviews-for-Woocommerce' target='_blank'>how to export your existing reviews</a> into Yotpo.</p>
 			</div>
@@ -322,5 +316,28 @@ function gs_yotpo_display_message($messages = array(), $is_error = false) {
 	}
 	elseif(is_string($messages)) {
 		echo "<div id='message' class='$class'><p><strong>$messages</strong></p></div>";
+	}
+}
+
+function gs_yotpo_export_reviews() {
+	$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
+	if (!empty($yotpo_settings['app_key'])) {
+		include(dirname(plugin_dir_path( __FILE__ )) . '/classes/class-gs-yotpo-export-reviews.php');
+		$export = new Yotpo_Review_Export();
+		list($file, $errors) = $export->exportReviews();
+		if(is_null($errors)) {
+			$errors = $export->downloadReviewToBrowser($file);
+			if (!is_null($errors)) {
+				gs_yotpo_display_message($errors);
+			} else {
+				exit();
+			}
+		}
+		else {
+			gs_yotpo_display_message($errors);
+		}
+	}
+	else {
+		gs_yotpo_display_message('Please set up your API key before exporting reviews.');
 	}
 }
