@@ -345,7 +345,7 @@ function gs_yotpo_send_past_orders() {
 }
 
 function gs_yotpo_conversion_track($purchase_log_object) {
-	if (!is_null($purchase_log_object) && $purchase_log_object->is_accepted_payment()) {
+	if (!is_null($purchase_log_object) && ($purchase_log_object->is_accepted_payment() ||  $purchase_log_object->is_order_received())) {
 		$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
 
 		global $wpdb;
