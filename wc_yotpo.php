@@ -194,7 +194,7 @@ function gs_yotpo_map($order_id) {
 
 	if ($order_id->is_closed_order()) {
 		// order status is "closed order" - TODO need to check with Omer if this is the only status we want to send purchases for
-		throw new Exception('aaaaasd3424');	
+		// throw new Exception('aaaaasd3424');	
 	} else {
 
 	}
@@ -258,43 +258,33 @@ function gs_yotpo_get_product_image_url($product_id) {
 }
 
 function gs_yotpo_get_past_orders() {
-	$result = null;
-	$args = array(
-		'post_type'			=> 'shop_order',
-		'posts_per_page' 	=> -1,
-		'tax_query' => array(
-			array(
-				'taxonomy' => 'shop_order_status',
-				'field' => 'slug',
-				'terms' => array('completed'),
-				'operator' => 'IN'
-			)
-		)	
-	);	
-	add_filter( 'posts_where', 'gs_yotpo_past_order_time_query' );
-	$query = new WP_Query( $args );
-	remove_filter( 'posts_where', 'gs_yotpo_past_order_time_query' );
-	wp_reset_query();
-	if ($query->have_posts()) {
-		$orders = array();
-		while ($query->have_posts()) { 
-			$query->the_post();
-			$order = $query->post;		
-			$single_order_data = gs_yotpo_get_single_map_data($order->ID);
-			if(!is_null($single_order_data)) {
-				$orders[] = $single_order_data;
-			}      	
+	global $wpdb;
+
+	$three_months_ago = mktime(0, 0, 0, date("n") - 2, 1, date("Y"));
+	$query = "SELECT id
+			  FROM " . WPSC_TABLE_PURCHASE_LOGS . "
+			  WHERE processed IN (" . implode(',', array(WPSC_Purchase_Log::CLOSED_ORDER, WPSC_Purchase_Log::JOB_DISPATCHED)) . ")
+			  AND date >= " . $three_months_ago;
+	$results = $wpdb->get_results($query, ARRAY_A);
+
+	$orders = array();
+	foreach ($results as $key => $order) {
+		$single_order_data = gs_yotpo_get_single_map_data($order['id']);
+		if (!is_null($single_order_data)) {
+			$orders[] = $single_order_data;
 		}
-		if(count($orders) > 0) {
-			$post_bulk_orders = array_chunk($orders, 200);
-			$result = array();
-			foreach ($post_bulk_orders as $index => $bulk)
-			{
-				$result[$index] = array();
-				$result[$index]['orders'] = $bulk;
-				$result[$index]['platform'] = 'woocommerce';			
-			}
-		}		
+	}
+
+	$result = array();
+	if(count($orders) > 0) {
+		$post_bulk_orders = array_chunk($orders, 200);
+		$result = array();
+		foreach ($post_bulk_orders as $index => $bulk)
+		{
+			$result[$index] = array();
+			$result[$index]['orders'] = $bulk;
+			$result[$index]['platform'] = 'getshopped';			
+		}
 	}
 	return $result;
 }
