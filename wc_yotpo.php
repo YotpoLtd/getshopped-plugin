@@ -48,7 +48,7 @@ function gs_yotpo_admin_settings() {
 
 function gs_yotpo_front_end_init() {	
 	$settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
-	// add_action('getshopped_thankyou', 'gs_yotpo_conversion_track');
+	add_action('wpsc_transaction_results_shutdown', 'gs_yotpo_conversion_track');
 	
 	if (get_post_type() == 'wpsc-product'  && is_single()) {
 
@@ -344,22 +344,27 @@ function gs_yotpo_send_past_orders() {
 	}		
 }
 
-function gs_yotpo_conversion_track($order_id) {
-	$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
-	$order = new WC_Order($order_id);
-	$currency = $order->order_custom_fields['_order_currency'];
-	if(is_array($currency)) {
-		$currency = $currency[0];
+function gs_yotpo_conversion_track($purchase_log_object) {
+	if (!is_null($purchase_log_object) && $purchase_log_object->is_accepted_payment()) {
+		$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
+
+		global $wpdb;
+		$currency_code = $wpdb->get_var($wpdb->prepare("SELECT `code` FROM `".WPSC_TABLE_CURRENCY_LIST."` WHERE `id` = %d LIMIT 1", get_option('currency_type')));
+
+		$conversion_params = http_build_query(
+								array(
+									'app_key' 		 => $yotpo_settings['app_key'],
+									'order_id' 		 => $purchase_log_object->get('id'),
+									'order_amount' 	 => $purchase_log_object->get('totalprice'),
+									'order_currency' => $currency_code
+								)
+							);
+
+		echo "<img 
+		src='https://api.yotpo.com/conversion_tracking.gif?$conversion_params'
+		width='1'
+		height='1'></img>";
 	}
-	
-	$conversion_params = "app_key="      .$yotpo_settings['app_key'].
-						 "&order_id="    .$order_id.
-						 "&order_amount=".$order->get_total().
-						 "&order_currency="  .$currency;
-	echo "<img 
-	src='https://api.yotpo.com/conversion_tracking.gif?$conversion_params'
-	width='1'
-	height='1'></img>";
 }
 
 function gs_yotpo_get_default_settings() {
