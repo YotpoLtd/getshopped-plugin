@@ -7,9 +7,14 @@
 	Author URI: http://www.yotpo.com?utm_source=yotpo_plugin_getshopped&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link
 	Plugin URI: http://www.yotpo.com?utm_source=yotpo_plugin_getshopped&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link
  */
+
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 include_once( plugin_dir_path( __FILE__ ) . 'templates/gs-yotpo-settings.php' );
 include_once( plugin_dir_path( __FILE__ ) . 'lib/yotpo-api/Yotpo.php' );
+
+if (!gs_yotpo_compatible()) {
+	add_action('admin_notices', 'gs_yotpo_not_compatible');
+}
 
 register_activation_hook(   __FILE__, 'gs_yotpo_activation' );
 register_uninstall_hook( __FILE__, 'gs_yotpo_uninstall' );
@@ -17,7 +22,7 @@ register_uninstall_hook( __FILE__, 'gs_yotpo_uninstall' );
 add_action('plugins_loaded', 'gs_yotpo_init');
 add_action('init', 'gs_yotpo_redirect');
 add_action('admin_menu', 'gs_yotpo_admin_settings');
-		
+
 function gs_yotpo_init() {
 	$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
 	if (!empty($yotpo_settings['app_key']) && gs_yotpo_compatible()) {
@@ -311,5 +316,9 @@ function gs_yotpo_admin_styles($hook) {
 }
 
 function gs_yotpo_compatible() {
-	return version_compare(phpversion(), '5.2.0') >= 0 && function_exists('curl_init');
+	return version_compare(phpversion(), '5.2.0') >= 0 && function_exists('curl_init') && is_plugin_active('wp-e-commerce/wp-shopping-cart.php');
+}
+
+function gs_yotpo_not_compatible() {
+	gs_yotpo_display_message('WARNING: Yotpo Social Reviews for GetShopped requires WP e-Commerce to be installed and active, PHP Version >= 5.2.0 and CURL.');
 }
