@@ -252,30 +252,34 @@ function gs_yotpo_get_past_orders() {
 	global $wpdb;
 
 	$three_months_ago = mktime(0, 0, 0, date("n") - 2, 1, date("Y"));
-	$query = "SELECT id
+	$query = "SELECT *
 			  FROM " . WPSC_TABLE_PURCHASE_LOGS . "
 			  WHERE processed IN (" . implode(',', array(WPSC_Purchase_Log::CLOSED_ORDER, WPSC_Purchase_Log::JOB_DISPATCHED)) . ")
 			  AND date >= " . $three_months_ago;
-	$results = $wpdb->get_results($query, ARRAY_A);
-
-	$orders = array();
-	foreach ($results as $key => $order) {
-		$single_order_data = gs_yotpo_get_single_map_data($order['id']);
-		if (!is_null($single_order_data)) {
-			$orders[] = $single_order_data;
-		}
-	}
+	$offset = 0;
+	$row_count = 10000;
 
 	$result = array();
-	if(count($orders) > 0) {
-		$post_bulk_orders = array_chunk($orders, 200);
-		$result = array();
-		foreach ($post_bulk_orders as $index => $bulk)
-		{
-			$result[$index] = array();
-			$result[$index]['orders'] = $bulk;
-			$result[$index]['platform'] = 'getshopped';			
+	while ($orders = $wpdb->get_results($query . " LIMIT $offset, $row_count", ARRAY_A)) {
+		$orders_batch = array();
+
+		// build order data
+		foreach ($orders as $key => $order) {
+			$single_order_data = gs_yotpo_get_single_map_data(new WPSC_Purchase_Log($order));
+			if (!is_null($single_order_data)) {
+				$orders_batch[] = $single_order_data;
+			}
 		}
+
+		// chunk batches by small batch
+		foreach (array_chunk($orders_batch, 200) as $key => $batch) {
+			$result[] = array(
+				'orders' => $batch,
+				'platform' => 'getshopped'
+			);
+		}
+
+		$offset += $row_count;
 	}
 	return $result;
 }
