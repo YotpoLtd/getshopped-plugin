@@ -1,10 +1,10 @@
 <?php
 function gs_display_yotpo_admin_page() {
 
-	if ( function_exists('current_user_can') && !current_user_can('manage_options') ) {
+	if (function_exists('current_user_can') && !current_user_can('manage_options')) {
 		die(__(''));
 	}
-	if(gs_yotpo_compatible()) {			
+	if (gs_yotpo_compatible()) {			
 		if (isset($_POST['log_in_button']) ) {
 			gs_display_yotpo_settings();
 		}
@@ -39,10 +39,10 @@ function gs_display_yotpo_admin_page() {
 		}
 	}
 	else {
-		if(version_compare(phpversion(), '5.2.0') < 0) {
+		if (version_compare(phpversion(), '5.2.0') < 0) {
 			echo '<h1>Yotpo plugin requires PHP 5.2.0 above.</h1><br>';	
 		}	
-		if(!function_exists('curl_init')) {
+		if (!function_exists('curl_init')) {
 			echo '<h1>Yotpo plugin requires cURL library.</h1><br>';
 		}			
 	}
@@ -66,7 +66,6 @@ function gs_display_yotpo_settings() {
 	$app_key = $yotpo_settings['app_key'];
 	$secret = $yotpo_settings['secret'];
 	$language_code = $yotpo_settings['language_code'];
-	$widget_tab_name = $yotpo_settings['widget_tab_name'];
 
 	if(empty($yotpo_settings['app_key'])) {
 		gs_yotpo_display_message('Set your API key in order the Yotpo plugin to work correctly', false);			
@@ -102,7 +101,7 @@ function gs_display_yotpo_settings() {
 	                 	<td><input type='checkbox' name='yotpo_language_as_site' value='1' ".checked(1, $yotpo_settings['yotpo_language_as_site'], false)."/></td>	                  
 	                 </tr>
 					 <tr valign='top'>
-		   		       <th scope='row'><div>Disable native reviews system:</div></th>
+		   		       <th scope='row'><div>Disable WP e-Commerce reviews system:</div></th>
 		   		       <td><input type='checkbox' name='product_ratings' value='1' ".checked(1, !get_option('product_ratings'), false)." /></td>
 		   		     </tr>	                 	                 
 	    	         <tr valign='top'>			
@@ -117,10 +116,6 @@ function gs_display_yotpo_settings() {
 		   		     <tr valign='top' class='yotpo-widget-location-other-explain'>
                  		<th scope='row'><p class='description'>In order to locate the widget in a custome location open 'wp-content/plugins/wp-e-commerce/wpsc-theme/wpsc-single_product.php' and add the following line <code>gs_yotpo_show_widget();</code> in the requested location.</p></th>
 	                 </tr>
-		   		     <tr valign='top' class='yotpo-widget-tab-name'>
-		   		       <th scope='row'><div>Select tab name:</div></th>
-		   		       <td><div><input type='text' name='yotpo_widget_tab_name' value='$widget_tab_name' /></div></td>
-		   		     </tr>
 		   		     $cradentials_location_explanation
 					 <tr valign='top'>
 		   		       <th scope='row'><div>App key:</div></th>
@@ -163,13 +158,12 @@ function gs_proccess_yotpo_settings() {
 						 'secret' => $_POST['yotpo_oauth_token'],
 						 'widget_location' => $_POST['yotpo_widget_location'],
 						 'language_code' => $_POST['yotpo_widget_language_code'],
-						 'widget_tab_name' => $_POST['yotpo_widget_tab_name'],
 						 'bottom_line_enabled_product' => isset($_POST['yotpo_bottom_line_enabled_product']) ? true : false,
 						 'bottom_line_enabled_category' => isset($_POST['yotpo_bottom_line_enabled_category']) ? true : false,
 						 'yotpo_language_as_site' => isset($_POST['yotpo_language_as_site']) ? true : false,
 						 'show_submit_past_orders' => $current_settings['show_submit_past_orders']);
-	update_option( 'yotpo_settings', $new_settings );
-	update_option( 'product_ratings', (int)(!$_POST['product_ratings']));
+	update_option('yotpo_settings', $new_settings);
+	update_option('product_ratings', (int)(!$_POST['product_ratings']));
 }
 
 function gs_display_yotpo_register() {		
