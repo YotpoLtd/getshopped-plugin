@@ -8,19 +8,17 @@
 	Plugin URI: http://www.yotpo.com?utm_source=yotpo_plugin_woocommerce&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link
  */
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+include_once( plugin_dir_path( __FILE__ ) . 'templates/gs-yotpo-settings.php' );
+include_once( plugin_dir_path( __FILE__ ) . 'lib/yotpo-api/Yotpo.php' );
 register_activation_hook(   __FILE__, 'gs_yotpo_activation' );
 register_uninstall_hook( __FILE__, 'gs_yotpo_uninstall' );
 register_deactivation_hook( __FILE__, 'gs_yotpo_deactivate' );
 add_action('plugins_loaded', 'gs_yotpo_init');
 add_action('init', 'gs_yotpo_redirect');
+add_action('admin_menu', 'gs_yotpo_admin_settings');
 		
 function gs_yotpo_init() {
 	$is_admin = is_admin();	
-	if($is_admin) {
-		include( plugin_dir_path( __FILE__ ) . 'templates/gs-yotpo-settings.php');
-		include(plugin_dir_path( __FILE__ ) . 'lib/yotpo-api/Yotpo.php');
-		add_action( 'admin_menu', 'gs_yotpo_admin_settings' );
-	}
 	$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
 	if(!empty($yotpo_settings['app_key']) && gs_yotpo_compatible()) {			
 		if(!$is_admin) {
@@ -41,9 +39,10 @@ function gs_yotpo_redirect() {
 	}	
 }
 
-function gs_yotpo_admin_settings() {
-	add_action( 'admin_enqueue_scripts', 'gs_yotpo_admin_styles' );	
-	$page = add_menu_page( 'Yotpo', 'Yotpo', 'manage_options', 'getshopped-yotpo-settings-page', 'gs_display_yotpo_admin_page', 'none', null );			
+function gs_yotpo_admin_settings() {	
+	add_action('admin_enqueue_scripts', 'gs_yotpo_admin_styles');
+	$page = add_menu_page('Yotpo', 'Yotpo', 'manage_options', 'getshopped-yotpo-settings-page', 'gs_display_yotpo_admin_page', 'none', null);
+	add_action('load-' . $page, 'gs_load_yotpo_admin_page', 1);
 }
 
 function gs_yotpo_front_end_init() {	
@@ -250,43 +249,33 @@ function gs_yotpo_get_product_image_url($product_id) {
 }
 
 function gs_yotpo_get_past_orders() {
-	$result = null;
-	$args = array(
-		'post_type'			=> 'shop_order',
-		'posts_per_page' 	=> -1,
-		'tax_query' => array(
-			array(
-				'taxonomy' => 'shop_order_status',
-				'field' => 'slug',
-				'terms' => array('completed'),
-				'operator' => 'IN'
-			)
-		)	
-	);	
-	add_filter( 'posts_where', 'gs_yotpo_past_order_time_query' );
-	$query = new WP_Query( $args );
-	remove_filter( 'posts_where', 'gs_yotpo_past_order_time_query' );
-	wp_reset_query();
-	if ($query->have_posts()) {
-		$orders = array();
-		while ($query->have_posts()) { 
-			$query->the_post();
-			$order = $query->post;		
-			$single_order_data = gs_yotpo_get_single_map_data($order->ID);
-			if(!is_null($single_order_data)) {
-				$orders[] = $single_order_data;
-			}      	
+	global $wpdb;
+
+	$three_months_ago = mktime(0, 0, 0, date("n") - 2, 1, date("Y"));
+	$query = "SELECT id
+			  FROM " . WPSC_TABLE_PURCHASE_LOGS . "
+			  WHERE processed IN (" . implode(',', array(WPSC_Purchase_Log::CLOSED_ORDER, WPSC_Purchase_Log::JOB_DISPATCHED)) . ")
+			  AND date >= " . $three_months_ago;
+	$results = $wpdb->get_results($query, ARRAY_A);
+
+	$orders = array();
+	foreach ($results as $key => $order) {
+		$single_order_data = gs_yotpo_get_single_map_data($order['id']);
+		if (!is_null($single_order_data)) {
+			$orders[] = $single_order_data;
 		}
-		if(count($orders) > 0) {
-			$post_bulk_orders = array_chunk($orders, 200);
-			$result = array();
-			foreach ($post_bulk_orders as $index => $bulk)
-			{
-				$result[$index] = array();
-				$result[$index]['orders'] = $bulk;
-				$result[$index]['platform'] = 'woocommerce';			
-			}
-		}		
+	}
+
+	$result = array();
+	if(count($orders) > 0) {
+		$post_bulk_orders = array_chunk($orders, 200);
+		$result = array();
+		foreach ($post_bulk_orders as $index => $bulk)
+		{
+			$result[$index] = array();
+			$result[$index]['orders'] = $bulk;
+			$result[$index]['platform'] = 'getshopped';			
+		}
 	}
 	return $result;
 }

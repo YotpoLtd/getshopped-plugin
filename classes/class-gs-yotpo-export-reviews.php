@@ -111,7 +111,7 @@ class Yotpo_Review_Export
 				  FROM `".$wpdb->prefix."comments` 
 				  INNER JOIN `".$wpdb->prefix."posts` ON `".$wpdb->prefix."posts`.`ID` = `".$wpdb->prefix."comments`.`comment_post_ID` 
 				  INNER JOIN `".$wpdb->prefix."commentmeta` ON `".$wpdb->prefix."commentmeta`.`comment_id` = `".$wpdb->prefix."comments`.`comment_ID` 
-				  WHERE `post_type` = 'product' AND meta_key='rating'";
+				  WHERE `post_type` = 'wpsc-product' AND meta_key='rating'";
 		$results = $wpdb->get_results($query);
 		$all_reviews = array();
 		foreach ($results as $value) {
