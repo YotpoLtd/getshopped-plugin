@@ -62,9 +62,7 @@ function gs_yotpo_front_end_init() {
 			add_filter('comments_open', 'gs_yotpo_remove_native_review_system', null, 2);
 		}						
 		if($widget_location == 'footer') {		
-			// var_dump('hello');
 			add_action('wpsc_theme_footer', 'gs_yotpo_show_widget', 10);
-			// add_action('woocommerce_after_single_product', 'wc_yotpo_show_widget', 10);  TODO find the appropriate action to show the widget in
 		}
 		elseif($widget_location == 'tab') {
 			// add_action('woocommerce_product_tabs', 'wc_yotpo_show_widget_in_tab');	TODO find the appropriate action to show widget in tab
@@ -77,7 +75,6 @@ function gs_yotpo_front_end_init() {
 }
 
 function gs_yotpo_activation() {
-	// add_action('wpsc_edit_order_status', 'test_map'); // TODO find appropriate action to send map
 	if(current_user_can( 'activate_plugins' )) {
 		update_option('gs_yotpo_just_installed', true);
 		$plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
@@ -191,64 +188,58 @@ function gs_yotpo_remove_native_review_system($open, $post_id) {
 	return $open;
 }
 
-function gs_yotpo_map($order_id) {
+function gs_yotpo_map($order) {
+	try {
+		if (!$order->is_closed_order() && !$order->is_job_dispatched()) {
+			//the order status doesn't fit our requirements
+			return;
+		}
 
-	if ($order_id->is_closed_order()) {
-		// order status is "closed order" - TODO need to check with Omer if this is the only status we want to send purchases for
-		throw new Exception('aaaaasd3424');	
-	} else {
-
+		$purchase_data = gs_yotpo_get_single_map_data($order);
+		if(!is_null($purchase_data) && is_array($purchase_data)) {
+			$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
+			$yotpo_api = new Yotpo($yotpo_settings['app_key'], $yotpo_settings['secret']);
+			$get_oauth_token_response = $yotpo_api->get_oauth_token();
+			if(!empty($get_oauth_token_response) && !empty($get_oauth_token_response['access_token'])) {
+				$purchase_data['utoken'] = $get_oauth_token_response['access_token'];
+				$purchase_data['platform'] = 'getshopped';
+				$response = $yotpo_api->create_purchase($purchase_data);			
+			}
+		}		
+	} catch (Exception $e) {
+		error_log($e->getMessage());
 	}
-	
-	// try {
-	// 		$purchase_data = gs_yotpo_get_single_map_data($order_id);
-	// 		if(!is_null($purchase_data) && is_array($purchase_data)) {
-	// 			$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
-	// 			$yotpo_api = new Yotpo($yotpo_settings['app_key'], $yotpo_settings['secret']);
-	// 			$get_oauth_token_response = $yotpo_api->get_oauth_token();
-	// 			if(!empty($get_oauth_token_response) && !empty($get_oauth_token_response['access_token'])) {
-	// 				$purchase_data['utoken'] = $get_oauth_token_response['access_token'];
-	// 				$purchase_data['platform'] = 'getshopped';
-	// 				$response = $yotpo_api->create_purchase($purchase_data);			
-	// 		}
-	// 	}		
-	// }
-	// catch (Exception $e) {
-	// 	error_log($e->getMessage());
-	// }
 }
 
-function gs_yotpo_get_single_map_data($order_id) {
-	$order = new WC_Order($order_id);
+function gs_yotpo_get_single_map_data($order) {
+
 	$data = null;
-	if(!is_null($order->id)) {
+	if(!is_null($order)) {
 		$data = array();
-		$data['order_date'] = $order->order_date;
+		$data['order_id'] = $order->get('id');
+		$data['order_date'] = gmdate("Y-m-d\TH:i:s\Z", $order->get('date'));
 		$data['email'] = $order->billing_email;
-		$data['customer_name'] = $order->billing_first_name.' '.$order->billing_last_name;
-		$data['order_id'] = $order_id;
-		$data['currency_iso'] = $order->order_custom_fields['_order_currency'];
-		if(is_array($data['currency_iso'])) {
-			$data['currency_iso'] = $data['currency_iso'][0];
-		}
+		$data['email'] = wpsc_get_buyers_email($data['order_id']);
+
+		$purchase_items_data = new wpsc_purchaselogs_items($data['order_id']);
+		$userinfo = $purchase_items_data->userinfo;
+		$data['customer_name'] = $userinfo['billingfirstname']['value']." ".$userinfo['billinglastname']['value'];
+		$data['currency_iso'] = gs_get_currency_code(); 
 		$products_arr = array();
-		foreach ($order->get_items() as $product) 
-		{
-			$product_instance = get_product($product['product_id']);
- 
-			$description = '';
-			if (is_object($product_instance)) {
-				$description = strip_tags($product_instance->get_post_data()->post_excerpt);	
-			}
-			$product_data = array();   
-			$product_data['url'] = get_permalink($product['product_id']); 
-			$product_data['name'] = $product['name'];
-			$product_data['image'] = wc_yotpo_get_product_image_url($product['product_id']);
-			$product_data['description'] = $description;
-			$product_data['price'] = $product['line_total'];
-			$products_arr[$product['product_id']] = $product_data;	
-		}	
+
+		foreach ($order->get_cart_contents() as $product) {
+			$product_data = array();
+			$product_data['name'] = $product->name;
+			$product_data['price'] = $product->price;
+			$product_data['url'] = wpsc_product_url($product->prodid);
+			$product_data['image'] = wpsc_the_product_image('', '', $product->prodid);
+			$product_data['description'] = htmlentities(get_post($product->prodid)->post_content);
+			$products_arr[$product->prodid] = $product_data;
+			
+		}
+
 		$data['products'] = $products_arr;
+
 	}
 	return $data;
 }
@@ -349,15 +340,12 @@ function gs_yotpo_conversion_track($purchase_log_object) {
 	if (!is_null($purchase_log_object) && ($purchase_log_object->is_accepted_payment() ||  $purchase_log_object->is_order_received())) {
 		$yotpo_settings = get_option('yotpo_settings', gs_yotpo_get_default_settings());
 
-		global $wpdb;
-		$currency_code = $wpdb->get_var($wpdb->prepare("SELECT `code` FROM `".WPSC_TABLE_CURRENCY_LIST."` WHERE `id` = %d LIMIT 1", get_option('currency_type')));
-
 		$conversion_params = http_build_query(
 								array(
 									'app_key' 		 => $yotpo_settings['app_key'],
 									'order_id' 		 => $purchase_log_object->get('id'),
 									'order_amount' 	 => $purchase_log_object->get('totalprice'),
-									'order_currency' => $currency_code
+									'order_currency' => gs_get_currency_code()
 								)
 							);
 
@@ -366,6 +354,11 @@ function gs_yotpo_conversion_track($purchase_log_object) {
 		width='1'
 		height='1'></img>";
 	}
+}
+
+function gs_get_currency_code() {
+	global $wpdb;
+	return $wpdb->get_var($wpdb->prepare("SELECT `code` FROM `".WPSC_TABLE_CURRENCY_LIST."` WHERE `id` = %d LIMIT 1", get_option('currency_type')));
 }
 
 function gs_yotpo_get_default_settings() {
