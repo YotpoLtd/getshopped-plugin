@@ -103,20 +103,19 @@ function gs_display_yotpo_settings() {
 	                 </tr>
 					 <tr valign='top'>
 		   		       <th scope='row'><div>Disable native reviews system:</div></th>
-		   		       <td><input type='checkbox' name='disable_native_review_system' value='1' ".checked(1, $yotpo_settings['disable_native_review_system'], false)." /></td>
+		   		       <td><input type='checkbox' name='product_ratings' value='1' ".checked(1, !get_option('product_ratings'), false)." /></td>
 		   		     </tr>	                 	                 
 	    	         <tr valign='top'>			
 				       <th scope='row'><div>Select widget location</div></th>
 				       <td>
 				         <select name='yotpo_widget_location' class='yotpo-widget-location'>
 				  	       <option value='footer' ".selected('footer',$yotpo_settings['widget_location'], false).">Page footer</option>
-			 		       <option value='tab' ".selected('tab',$yotpo_settings['widget_location'], false).">Tab</option>
 			 	           <option value='other' ".selected('other',$yotpo_settings['widget_location'], false).">Other</option>
 				         </select>
 		   		       </td>
 		   		     </tr>
 		   		     <tr valign='top' class='yotpo-widget-location-other-explain'>
-                 		<th scope='row'><p class='description'>In order to locate the widget in a custome location open 'wp-content/plugins/woocommerce/templates/content-single-product.php' and add the following line <code>wc_yotpo_show_widget();</code> in the requested location.</p></th>	                 																	
+                 		<th scope='row'><p class='description'>In order to locate the widget in a custome location open 'wp-content/plugins/wp-e-commerce/wpsc-theme/wpsc-single_product.php' and add the following line <code>gs_yotpo_show_widget();</code> in the requested location.</p></th>
 	                 </tr>
 		   		     <tr valign='top' class='yotpo-widget-tab-name'>
 		   		       <th scope='row'><div>Select tab name:</div></th>
@@ -168,17 +167,9 @@ function gs_proccess_yotpo_settings() {
 						 'bottom_line_enabled_product' => isset($_POST['yotpo_bottom_line_enabled_product']) ? true : false,
 						 'bottom_line_enabled_category' => isset($_POST['yotpo_bottom_line_enabled_category']) ? true : false,
 						 'yotpo_language_as_site' => isset($_POST['yotpo_language_as_site']) ? true : false,
-						 'disable_native_review_system' => isset($_POST['disable_native_review_system']) ? true : false,
 						 'show_submit_past_orders' => $current_settings['show_submit_past_orders']);
 	update_option( 'yotpo_settings', $new_settings );
-	if($current_settings['disable_native_review_system'] != $new_settings['disable_native_review_system']) {
-		if($new_settings['disable_native_review_system'] == false) {		
-			update_option( 'woocommerce_enable_review_rating', get_option('native_star_ratings_enabled'));
-		}			
-		else {
-			update_option( 'woocommerce_enable_review_rating', 'no');
-		}
-	}
+	update_option( 'product_ratings', (int)(!$_POST['product_ratings']));
 }
 
 function gs_display_yotpo_register() {		
