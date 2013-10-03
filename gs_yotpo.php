@@ -4,8 +4,8 @@
 	Description: Yotpo Social Reviews helps GetShopped store owners generate a ton of reviews for their products. Yotpo is the only solution which makes it easy to share your reviews automatically to your social networks to gain a boost in traffic and an increase in sales.
 	Author: Yotpo
 	Version: 1.0.0
-	Author URI: http://www.yotpo.com?utm_source=yotpo_plugin_woocommerce&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link	
-	Plugin URI: http://www.yotpo.com?utm_source=yotpo_plugin_woocommerce&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link
+	Author URI: http://www.yotpo.com?utm_source=yotpo_plugin_getshopped&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link
+	Plugin URI: http://www.yotpo.com?utm_source=yotpo_plugin_getshopped&utm_medium=plugin_page_link&utm_campaign=getshopped_plugin_page_link
  */
 include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 include_once( plugin_dir_path( __FILE__ ) . 'templates/gs-yotpo-settings.php' );
