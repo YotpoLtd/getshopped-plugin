@@ -103,7 +103,15 @@ function gs_display_yotpo_settings() {
 					 <tr valign='top'>
 		   		       <th scope='row'><div>Disable WP e-Commerce reviews system:</div></th>
 		   		       <td><input type='checkbox' name='product_ratings' value='1' ".checked(1, !get_option('product_ratings'), false)." /></td>
-		   		     </tr>	                 	                 
+		   		     </tr>
+		   		     <tr valign='top'>
+		   		       <th scope='row'><div>Disable WP e-Commerce comments system:</div></th>
+		   		       <td><input type='checkbox' name='wpsc_enable_comments' value='1' ".checked(1, !get_option('wpsc_enable_comments'), false)." /></td>
+		   		     </tr>
+		   		     <tr valign='top'>
+		   		       <th scope='row'><div>Disable native comments system:</div></th>
+		   		       <td><input type='checkbox' name='yotpo_disable_native_comments' value='1' ".checked(1, $yotpo_settings['yotpo_disable_native_comments'], true)." /></td>
+		   		     </tr>           	                 
 	    	         <tr valign='top'>			
 				       <th scope='row'><div>Select widget location</div></th>
 				       <td>
@@ -161,9 +169,11 @@ function gs_proccess_yotpo_settings() {
 						 'bottom_line_enabled_product' => isset($_POST['yotpo_bottom_line_enabled_product']) ? true : false,
 						 'bottom_line_enabled_category' => isset($_POST['yotpo_bottom_line_enabled_category']) ? true : false,
 						 'yotpo_language_as_site' => isset($_POST['yotpo_language_as_site']) ? true : false,
+						 'yotpo_disable_native_comments' => $_POST['yotpo_disable_native_comments'],
 						 'show_submit_past_orders' => $current_settings['show_submit_past_orders']);
 	update_option('yotpo_settings', $new_settings);
 	update_option('product_ratings', (int)(!$_POST['product_ratings']));
+	update_option('wpsc_enable_comments', (int)(!$_POST['wpsc_enable_comments']));
 }
 
 function gs_display_yotpo_register() {		

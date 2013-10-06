@@ -68,7 +68,11 @@ function gs_yotpo_front_end_init() {
 	elseif ($settings['bottom_line_enabled_category']) {
 		wp_enqueue_style('yotpoSideBootomLineStylesheet', plugins_url('assets/css/bottom-line.css', __FILE__));
 		add_filter('wpsc_the_product_price_display_price_class', 'gs_yotpo_show_bottomline');
-	}						
+	}
+
+	if ($settings['yotpo_disable_native_comments']) {
+		add_filter('comments_template', 'gs_yotpo_comments_template');
+	}
 }
 
 function gs_yotpo_activation() {
@@ -304,6 +308,7 @@ function gs_yotpo_get_default_settings() {
 				  'bottom_line_enabled_product' => true,
 				  'bottom_line_enabled_category' => true,
 				  'yotpo_language_as_site' => true,
+				  'yotpo_disable_native_comments' => true,
 				  'show_submit_past_orders' => true);
 }
 
@@ -321,4 +326,8 @@ function gs_yotpo_compatible() {
 
 function gs_yotpo_not_compatible() {
 	gs_yotpo_display_message('WARNING: Yotpo Social Reviews for GetShopped requires WP e-Commerce to be installed and active, PHP Version >= 5.2.0 and CURL.');
+}
+
+function gs_yotpo_comments_template() {
+	return plugin_dir_path( __FILE__ ) . 'templates/comments.php';
 }
