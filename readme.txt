@@ -2,8 +2,8 @@
 Contributors: Yotpo
 Tags: reviews, social reviews, woocommerce, woocommerce reviews, woocommerce product reviews, woocommerce extensions, woocommerce plugins, woocommerce addons, woocommerce add-ons, yotpo, yotpo reviews, yotpo social reviews
 Requires at least: 3.5.1
-Tested up to: 3.5.2
-Stable tag: 1.0.5
+Tested up to: 3.6.1
+Stable tag: 1.0.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,20 +91,8 @@ Yes. To connect your social accounts to Yotpo, just log into yotpo.com, and clic
 
 == Changelog ==
 
-= 1.0.2 - 04/07/2013 =
+= 1.0.0 - 10/07/2013 =
 * Initial Release.
-= 1.0.3 - 16/07/2013 =
-* Changes in text.
-= 1.0.4 - 21/07/2013 =
-* Replace yotpo.phar file with Yotpo.php, and change minimum requirements from PHP 5.3.0 to PHP 5.2.0 and above .
-* Ensure that the minimum requirements are met.
-= 1.0.5 - 31/07/2013 =
-* Remove widget from products which are not checked with 'Enable reviews' checkbox.
-* Fix bugs.
-* Disable woocommerce ratings upon activation and restore value of woocommerce ratings when deactivating.
 
-= 1.0.6 - 14/08/2013 =
-* Add support to Tab manager extension.
-* Bug fix in removing native review system.
  
 

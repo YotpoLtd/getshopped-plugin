@@ -122,14 +122,13 @@ class Yotpo_Review_Export
 			$current_review['review_content'] = $review_content;
 			$current_review['display_name'] = $this->cleanContent($value->display_name);
 			$current_review['user_email'] = $value->user_email;
-			// $current_review['user_type'] = woocommerce_customer_bought_product($value->user_email, $value->user_id, $value->product_id) ? 'verified_buyer' : ''; TODO fix this line
 			$current_review['review_score'] = $value->review_score;
 			$current_review['date'] = $value->date;
 			$current_review['sku'] = $value->product_id;
 			$current_review['product_title'] = $this->cleanContent($value->product_title);
 			$current_review['product_description'] = $this->cleanContent($product_instance->get_post_data()->post_excerpt);
 			$current_review['product_url'] = get_permalink($value->product_id);
-			$current_review['product_image_url'] = gs_yotpo_get_product_image_url($value->product_id);
+			$current_review['product_image_url'] = wpsc_yotpo_get_product_image_url($value->product_id);
 			$all_reviews[] = $current_review;
 		}
 		return $all_reviews;
