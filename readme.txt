@@ -1,17 +1,17 @@
-=== Yotpo Social Reviews for Woocommerce ===
+=== Yotpo Social Reviews for WP e-Commerce ===
 Contributors: Yotpo
-Tags: reviews, social reviews, woocommerce, woocommerce reviews, woocommerce product reviews, woocommerce extensions, woocommerce plugins, woocommerce addons, woocommerce add-ons, yotpo, yotpo reviews, yotpo social reviews
+Tags: reviews, social reviews, WP e-Commerce, WP e-Commerce reviews, WP e-Commerce product reviews, WP e-Commerce extensions, WP e-Commerce plugins, WP e-Commerce addons, WP e-Commerce add-ons, yotpo, yotpo reviews, yotpo social reviews, getshopped reviews, getshopped product reviews, getshopped add-ons, getshopped extensions, getshopped plugins, getshopped add ons, getshopped add on
 Requires at least: 3.5.1
 Tested up to: 3.6.1
-Stable tag: 1.0.0
+Stable tag: 1.0.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Generate tons of product reviews for your Woocommerce site with Yotpo Social Reviews
+Generate tons of product reviews for your Wordpress eCommerce site with Yotpo Social Reviews
 
 == Description ==
 
-[Yotpo Social Reviews](http://www.yotpo.com/?utm_source=wordpress&utm_medium=description_link&utm_campaign=woocommerce_wordpress_page) is the world's most effective product reviews solution for eCommerce sites and is now available for Woocommerce. Generate tons of product reviews for your Woocommerce site with Yotpo.
+[Yotpo Social Reviews](http://www.yotpo.com/?utm_source=wordpress&utm_medium=description_link&utm_campaign=wp_ecommerce_wordpress_page) is the world's most effective product reviews solution for eCommerce sites and is now available for WP e-Commerce. Generate tons of product reviews for your WP e-Commerce site with Yotpo.
 
 = The many features of Yotpo Social Reviews =
 
@@ -28,10 +28,10 @@ Generate tons of product reviews for your Woocommerce site with Yotpo Social Rev
 
 = Demos =
 
-To learn more about Yotpo head over to our website - [yotpo.com](http://www.yotpo.com/?utm_source=wordpress&utm_medium=description_link&utm_campaign=woocommerce_wordpress_page).
+To learn more about Yotpo head over to our website - [yotpo.com](http://www.yotpo.com/?utm_source=wordpress&utm_medium=description_link&utm_campaign=wp_ecommerce_wordpress_page).
 To view a live demo of a store using our widget, head to [Carbonfibergear.com](http://store.carbonfibergear.com/3k-carbon-fiber-leather-wallet)
-To view a live demo of our admin panel, just login at [yotpo.com](http://www.yotpo.com/?utm_source=wordpress&utm_medium=description_link&utm_campaign=woocommerce_wordpress_page), with the following credentials: 
-Username: woocommerce@yotpo.com 
+To view a live demo of our admin panel, just login at [yotpo.com](http://www.yotpo.com/?utm_source=wordpress&utm_medium=description_link&utm_campaign=wp_ecommerce_wordpress_page), with the following credentials: 
+Username: wp_ecommerce@yotpo.com 
 Password: 123456
 
 http://www.youtube.com/watch?v=5yo6NVRm6mw
@@ -58,7 +58,7 @@ Yotpo is completely free and always will be.
 
 = Can I import my existing product reviews into Yotpo? =
 
-Yes, you can import your existing reviews to Yotpo. We have made this process very easy for you by allowing you to export your existing reviews straight from within the Yotpo plugin. For more information on how to import your existing reviews within Yotpo visit the following link: [Exporting reviews for Woocommerce](http://support.yotpo.com/entries/24454261-Exporting-reviews-for-Woocommerce)
+Yes, you can import your existing reviews to Yotpo. We have made this process very easy for you by allowing you to export your existing reviews straight from within the Yotpo plugin. For more information on how to import your existing reviews within Yotpo visit the following link: [Exporting reviews for WP e-Commerce](http://support.yotpo.com/entries/27696696-Exporting-reviews-for-WP-e-Commerce)
 
 = Can I translate the Yotpo widget and the Mail After Purchase emails? = 
 
@@ -91,8 +91,7 @@ Yes. To connect your social accounts to Yotpo, just log into yotpo.com, and clic
 
 == Changelog ==
 
-= 1.0.0 - 10/07/2013 =
+= 1.0.2 - 10/07/2013 =
 * Initial Release.
 
  
-
