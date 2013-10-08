@@ -114,7 +114,7 @@ function wpsc_display_yotpo_settings() {
 		   		     </tr>
 		   		     <tr valign='top'>
 		   		       <th scope='row'><div>Disable native comments system:</div></th>
-		   		       <td><input type='checkbox' name='yotpo_disable_native_comments' value='1' ".checked(1, $yotpo_settings['yotpo_disable_native_comments'], true)." /></td>
+		   		       <td><input type='checkbox' name='yotpo_disable_native_comments' value='1' ".checked(1, $yotpo_settings['yotpo_disable_native_comments'], false)." /></td>
 		   		     </tr>           	                 
 	    	         <tr valign='top'>			
 				       <th scope='row'><div>Select widget location</div></th>
