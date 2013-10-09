@@ -261,7 +261,7 @@ function wpsc_proccess_yotpo_register() {
         			$shop_domain = parse_url($shop_url,PHP_URL_HOST);
         			$account_platform_response = $yotpo_api->create_account_platform(array( 'shop_domain' => wpsc_yotpo_get_shop_domain(),
         																		   			'utoken' => $response['response']['token'],
-        																					'platform_type_id' => 12));
+        																					'platform_type_id' => 24));
         			if(!empty($response['status']) && !empty($response['status']['code']) && $response['status']['code'] == 200) {
         				$current_settings = get_option('yotpo_settings', wpsc_yotpo_get_default_settings());
         				$current_settings['app_key'] = $app_key;
