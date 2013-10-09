@@ -73,7 +73,7 @@ function wpsc_display_yotpo_settings() {
 	$google_customize_tracking_params = '%253Futm_source%253Dyotpo_plugin_wp_ecommerce%2526utm_medium%253Dheader_link%2526utm_campaign%253Dwp_ecommerce_customize_link';
 	$google_moderate_tracking_params = '%253Futm_source%253Dyotpo_plugin_wp_ecommerce%2526utm_medium%253Dheader_link%2526utm_campaign%253Dwp_ecommerce_moderate_link';
 	if (!empty($yotpo_settings['app_key']) && !empty($yotpo_settings['secret'])) {
-		$customize_link = '<a href="https://api.yotpo.com/users/b2blogin?app_key='.$yotpo_settings['app_key'].'&secret='.$yotpo_settings['secret'].'&redirect=/customize/look-and-feel'.$google_customize_tracking_params.'" target="_blank">Yotpo Dashboard.</a>';
+		$customize_link = '<a href="https://api.yotpo.com/users/b2blogin?app_key='.$yotpo_settings['app_key'].'&secret='.$yotpo_settings['secret'].'&redirect=/customize/look-and-feel'.$google_customize_tracking_params.'" target="_blank">Yotpo Admin.</a>';
 		$moderate_link = '<a href="https://api.yotpo.com/users/b2blogin?app_key='.$yotpo_settings['app_key'].'&secret='.$yotpo_settings['secret'].'&redirect=/reviews/'.$yotpo_settings['app_key'].$google_moderate_tracking_params.'" target="_blank">moderate page.</a>';
 	}
 	else {
@@ -105,11 +105,11 @@ function wpsc_display_yotpo_settings() {
 	                 	<td><input type='checkbox' name='yotpo_language_as_site' value='1' ".checked(1, $yotpo_settings['yotpo_language_as_site'], false)."/></td>	                  
 	                 </tr>
 					 <tr valign='top'>
-		   		       <th scope='row'><div>Disable WP e-Commerce reviews system:</div></th>
+		   		       <th scope='row'><div>Disable WP e-Commerce Rating system:</div></th>
 		   		       <td><input type='checkbox' name='product_ratings' value='1' ".checked(1, !get_option('product_ratings'), false)." /></td>
 		   		     </tr>
 		   		     <tr valign='top'>
-		   		       <th scope='row'><div>Disable WP e-Commerce comments system:</div></th>
+		   		       <th scope='row'><div>Disable IntenseDebate Reviews system:</div></th>
 		   		       <td><input type='checkbox' name='wpsc_enable_comments' value='1' ".checked(1, !get_option('wpsc_enable_comments'), false)." /></td>
 		   		     </tr>
 		   		     <tr valign='top'>
