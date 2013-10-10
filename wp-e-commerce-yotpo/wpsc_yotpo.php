@@ -122,7 +122,7 @@ function wpsc_yotpo_get_template($type) {
 		$domain = wpsc_yotpo_get_shop_domain();
 		$yotpoLanguageCode = $yotpo_settings['language_code'];
 
-		if($settings['yotpo_language_as_site'] == true) {
+		if($yotpo_settings['yotpo_language_as_site'] == true) {
 		$lang = explode('-', get_bloginfo('language'));
 			// In some languages there is a 3 letters language code
 			//TODO map these iso-639-2 to iso-639-1 (from 3 letters language code to 2 letters language code) 
@@ -130,9 +130,6 @@ function wpsc_yotpo_get_template($type) {
 			$yotpoLanguageCode = $lang[0];	
 			}		
 		}	
-
-
-		$yotpoLanguageCode = $yotpo_settings['yotpo_language_as_site'] ? 
 		
 		$yotpo_div = "<div class='yotpo ".$type."' 
 					data-appkey='".$yotpo_settings['app_key']."'
