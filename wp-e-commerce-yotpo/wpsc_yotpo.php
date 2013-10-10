@@ -180,7 +180,6 @@ function wpsc_yotpo_get_single_map_data($order) {
 		$data = array();
 		$data['order_id'] = $order->get('id');
 		$data['order_date'] = gmdate("Y-m-d\TH:i:s\Z", $order->get('date'));
-		$data['email'] = $order->billing_email;
 		$data['email'] = wpsc_get_buyers_email($data['order_id']);
 
 		$purchase_items_data = new wpsc_purchaselogs_items($data['order_id']);
@@ -331,11 +330,15 @@ function wpsc_yotpo_admin_styles($hook) {
 }
 
 function wpsc_yotpo_compatible() {
-	return version_compare(phpversion(), '5.2.0') >= 0 && function_exists('curl_init') && is_plugin_active('wp-e-commerce/wp-shopping-cart.php');
+	return version_compare(phpversion(), '5.2.0') >= 0 && function_exists('curl_init') && is_plugin_active('wp-e-commerce/wp-shopping-cart.php') && version_compare(get_option('wpsc_version', '0'), '3.8.9', '>=');
+}
+
+function wpsc_yotpo_not_compatible_message() {
+	return 'WARNING: Yotpo Social Reviews for WP-e-Commerce requires WP e-Commerce (version >= 3.8.9) to be installed and active, PHP Version >= 5.2.0 and CURL.';
 }
 
 function wpsc_yotpo_not_compatible() {
-	wpsc_yotpo_display_message('WARNING: Yotpo Social Reviews for WP-e-Commerce requires WP e-Commerce to be installed and active, PHP Version >= 5.2.0 and CURL.');
+	wpsc_yotpo_display_message(wpsc_yotpo_not_compatible_message());
 }
 
 function wpsc_yotpo_comments_template() {
