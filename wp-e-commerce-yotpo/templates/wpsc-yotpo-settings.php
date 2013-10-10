@@ -277,9 +277,9 @@ function wpsc_proccess_yotpo_register() {
         		}
         		elseif($response['status']['code'] >= 400){
         			if(!empty($response['status']['message'])) { 
-        				if(!empty($response['status']['message']['email'])) {
+        				if(is_array($response['status']['message']) && !empty($response['status']['message']['email'])) {
         					if(is_array($response['status']['message']['email'])) {
-        						wpsc_yotpo_display_message($response['status']['message']['email'][0], false);
+        						wpsc_yotpo_display_message('Email '.$response['status']['message']['email'][0], false);
         					}
         					else {
         						wpsc_yotpo_display_message($response['status']['message']['email'], false);
