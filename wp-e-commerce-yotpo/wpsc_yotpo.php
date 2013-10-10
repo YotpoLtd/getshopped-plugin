@@ -71,7 +71,7 @@ function wpsc_yotpo_front_end_init() {
 	}
 
 	if ($settings['yotpo_disable_native_comments']) {
-		add_filter( 'comments_open', 'wpsc_yotpo_remove_native_review_system', null, 2);	
+		add_filter('comments_template', 'wpsc_yotpo_comments_template');
 	}
 }
 
@@ -129,8 +129,8 @@ function wpsc_yotpo_get_template($type) {
 			if(strlen($lang[0]) == 2) {
 			$yotpoLanguageCode = $lang[0];	
 			}		
+
 		}	
-		
 		$yotpo_div = "<div class='yotpo ".$type."' 
 					data-appkey='".$yotpo_settings['app_key']."'
 					data-domain='".$domain."'
@@ -338,10 +338,6 @@ function wpsc_yotpo_not_compatible() {
 	wpsc_yotpo_display_message('WARNING: Yotpo Social Reviews for WP-e-Commerce requires WP e-Commerce to be installed and active, PHP Version >= 5.2.0 and CURL.');
 }
 
-
-function spsc_yotpo_remove_native_review_system($open, $post_id) {
-	if(get_post_type($post_id) == 'wpsc-product') {
-		return false;
-	}
-	return $open;
+function wpsc_yotpo_comments_template() {
+	return (get_post_type() == 'wpsc-product') ? (plugin_dir_path( __FILE__ ) . 'templates/comments.php') : false;
 }
