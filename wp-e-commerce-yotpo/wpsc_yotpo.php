@@ -56,7 +56,7 @@ function wpsc_yotpo_front_end_init() {
 
 	if (get_post_type() == 'wpsc-product'  && is_single()) {
 		if ($settings['bottom_line_enabled_product']) {	
-			add_filter('wpsc_the_product_price_display_price_class', 'wpsc_yotpo_show_bottomline');
+			add_action('wpsc_product_form_fields_begin', 'wpsc_yotpo_show_bottomline');
 			wp_enqueue_style('yotpoSideBootomLineStylesheet', plugins_url('assets/css/bottom-line.css', __FILE__));
 		}
 
@@ -67,7 +67,7 @@ function wpsc_yotpo_front_end_init() {
 	}
 	elseif ($settings['bottom_line_enabled_category']) {
 		wp_enqueue_style('yotpoSideBootomLineStylesheet', plugins_url('assets/css/bottom-line.css', __FILE__));
-		add_filter('wpsc_the_product_price_display_price_class', 'wpsc_yotpo_show_bottomline');
+		add_action('wpsc_product_form_fields_begin', 'wpsc_yotpo_show_bottomline');
 	}
 
 	if ($settings['yotpo_disable_native_comments']) {
