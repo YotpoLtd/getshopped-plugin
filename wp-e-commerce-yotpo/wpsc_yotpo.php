@@ -122,15 +122,15 @@ function wpsc_yotpo_get_template($type) {
 		$domain = wpsc_yotpo_get_shop_domain();
 		$yotpoLanguageCode = $yotpo_settings['language_code'];
 
-		if($settings['yotpo_language_as_site'] == true) {
+		if($yotpo_settings['yotpo_language_as_site'] == true) {
 		$lang = explode('-', get_bloginfo('language'));
 			// In some languages there is a 3 letters language code
 			//TODO map these iso-639-2 to iso-639-1 (from 3 letters language code to 2 letters language code) 
 			if(strlen($lang[0]) == 2) {
 			$yotpoLanguageCode = $lang[0];	
 			}		
-		}
-		
+
+		}	
 		$yotpo_div = "<div class='yotpo ".$type."' 
 					data-appkey='".$yotpo_settings['app_key']."'
 					data-domain='".$domain."'
