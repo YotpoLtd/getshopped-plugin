@@ -85,6 +85,21 @@ function wpsc_yotpo_activation() {
 			add_option('yotpo_settings', wpsc_yotpo_get_default_settings());
 		}
 		update_option('product_ratings', 0);
+		//change comment status to enabled for all product type posts
+		$args = array('post_type' => 'wpsc-product');
+		$post_query = new WP_Query($args);
+		if($post_query->have_posts() ) {
+			while($post_query->have_posts() ) {
+		    	$post_query->the_post();
+		    	wp_update_post(array('ping_status' => 'open', 'comment_status' => 'open'));
+		    	$product_data['meta'] = get_post_meta(wpsc_the_product_id(), '');
+				foreach( $product_data['meta'] as $meta_name => $meta_value ) {
+					$product_data['meta'][$meta_name] = maybe_unserialize( array_pop( $meta_value ) );
+				}
+				$product_data['meta']['_wpsc_product_metadata']['enable_comments'] = 1;
+		    	wpsc_update_product_meta(wpsc_the_product_id(), $product_data['meta']);
+		  }
+		}
 	}        
 }
 
@@ -120,6 +135,7 @@ function wpsc_yotpo_get_template($type) {
 		$productUrl = wpsc_this_page_url();
 		$productSku = array_pop(get_product_meta($productId, 'sku'));
 		$domain = wpsc_yotpo_get_shop_domain();
+
 		$yotpoLanguageCode = $yotpo_settings['language_code'];
 
 		if($yotpo_settings['yotpo_language_as_site'] == true) {
@@ -138,7 +154,7 @@ function wpsc_yotpo_get_template($type) {
 					data-product-models='".$productSku."'
 					data-name='".$productTitle."' 
 					data-url='".$productUrl."' 
-					data-image-url='".wpsc_the_product_image()."' 
+					data-image-url='".wpsc_yotpo_product_image_url($productId)."' 
 					data-description='".$productDescription."' 
 					data-bread-crumbs=''
 					data-lang='".$yotpoLanguageCode."'></div>";
@@ -193,7 +209,7 @@ function wpsc_yotpo_get_single_map_data($order) {
 			$product_data['name'] = $product->name;
 			$product_data['price'] = $product->price;
 			$product_data['url'] = wpsc_product_url($product->prodid);
-			$product_data['image'] = wpsc_the_product_image('', '', $product->prodid);
+			$product_data['image'] = wpsc_yotpo_product_image_url($product->prodid);
 			$product_data['description'] = htmlentities(get_post($product->prodid)->post_content);
 			$products_arr[$product->prodid] = $product_data;
 			
@@ -343,4 +359,12 @@ function wpsc_yotpo_not_compatible() {
 
 function wpsc_yotpo_comments_template() {
 	return (get_post_type() == 'wpsc-product') ? (plugin_dir_path( __FILE__ ) . 'templates/comments.php') : false;
+}
+
+function wpsc_yotpo_product_image_url($productId) {
+	$productImageUrl = wpsc_the_product_image('', '', $productId);
+	if (is_array($productImageUrl)) {
+		$productImageUrl = $productImageUrl[0];
+	}
+	return $productImageUrl;
 }
