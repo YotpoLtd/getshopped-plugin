@@ -91,14 +91,18 @@ function wpsc_yotpo_activation() {
 		if($post_query->have_posts() ) {
 			while($post_query->have_posts() ) {
 		    	$post_query->the_post();
-		    	wp_update_post(array('ping_status' => 'open', 'comment_status' => 'open'));
 		    	$product_data['meta'] = get_post_meta(wpsc_the_product_id(), '');
 				foreach( $product_data['meta'] as $meta_name => $meta_value ) {
 					$product_data['meta'][$meta_name] = maybe_unserialize( array_pop( $meta_value ) );
 				}
-				$product_data['meta']['_wpsc_product_metadata']['enable_comments'] = 1;
-		    	wpsc_update_product_meta(wpsc_the_product_id(), $product_data['meta']);
-		  }
+				
+				//check if this is a product set by use default and if so, change to enable comments
+				if ($product_data['meta']['_wpsc_product_metadata']['enable_comments'] == '') {
+					$product_data['meta']['_wpsc_product_metadata']['enable_comments'] = 1;
+		    		wp_update_post(array('ping_status' => 'open', 'comment_status' => 'open'));
+		    		wpsc_update_product_meta(wpsc_the_product_id(), $product_data['meta']);
+				}
+		  	}
 		}
 	}        
 }
