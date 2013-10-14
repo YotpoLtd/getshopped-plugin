@@ -84,25 +84,31 @@ function wpsc_yotpo_activation() {
 		if (!is_array($default_settings)) {
 			add_option('yotpo_settings', wpsc_yotpo_get_default_settings());
 		}
-		update_option('product_ratings', 0);
-		//change comment status to enabled for all product type posts
-		$args = array('post_type' => 'wpsc-product');
-		$post_query = new WP_Query($args);
-		if($post_query->have_posts() ) {
-			while($post_query->have_posts() ) {
-		    	$post_query->the_post();
-		    	$product_data['meta'] = get_post_meta(wpsc_the_product_id(), '');
-				foreach( $product_data['meta'] as $meta_name => $meta_value ) {
-					$product_data['meta'][$meta_name] = maybe_unserialize( array_pop( $meta_value ) );
-				}
-				
-				//check if this is a product set by use default and if so, change to enable comments
-				if ($product_data['meta']['_wpsc_product_metadata']['enable_comments'] == '') {
-					$product_data['meta']['_wpsc_product_metadata']['enable_comments'] = 1;
-		    		wp_update_post(array('ping_status' => 'open', 'comment_status' => 'open'));
-		    		wpsc_update_product_meta(wpsc_the_product_id(), $product_data['meta']);
-				}
-		  	}
+		try {
+			update_option('product_ratings', 0); //disable by default product_settings
+			update_option('wpsc_enable_comments', 0); //disable intense debate by default
+
+			//change comment status to enabled for all product type posts
+			$args = array('post_type' => 'wpsc-product');
+			$post_query = new WP_Query($args);
+			if($post_query->have_posts() ) {
+				while($post_query->have_posts() ) {
+			    	$post_query->the_post();
+			    	$product_data['meta'] = get_post_meta(wpsc_the_product_id(), '');
+					foreach( $product_data['meta'] as $meta_name => $meta_value ) {
+						$product_data['meta'][$meta_name] = maybe_unserialize( array_pop( $meta_value ) );
+					}
+					
+					//check if this is a product set by use default and if so, change to enable comments
+					if ($product_data['meta']['_wpsc_product_metadata']['enable_comments'] == '') {
+						$product_data['meta']['_wpsc_product_metadata']['enable_comments'] = 1;
+			    		wp_update_post(array('ping_status' => 'open', 'comment_status' => 'open'));
+			    		wpsc_update_product_meta(wpsc_the_product_id(), $product_data['meta']);
+					}
+			  	}
+			}
+		} catch (Exception $e) {
+			//failed to disable default comment systems 
 		}
 	}        
 }
