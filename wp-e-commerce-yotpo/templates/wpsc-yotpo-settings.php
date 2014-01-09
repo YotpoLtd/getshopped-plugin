@@ -17,7 +17,7 @@ function wpsc_display_yotpo_admin_page() {
 			check_admin_referer( 'yotpo_registration_form' );
 			$success = wpsc_proccess_yotpo_register();
 			if($success) {			
-				wpsc_display_yotpo_settings();
+				wpsc_display_yotpo_settings($success);
 			}
 			else {
 				wpsc_display_yotpo_register();	
@@ -61,15 +61,19 @@ function wpsc_load_yotpo_admin_page() {
 	}
 }
 
-function wpsc_display_yotpo_settings() {
+function wpsc_display_yotpo_settings($success_type = false) {
 	$yotpo_settings = get_option('yotpo_settings', wpsc_yotpo_get_default_settings());
 	$app_key = $yotpo_settings['app_key'];
 	$secret = $yotpo_settings['secret'];
 	$language_code = $yotpo_settings['language_code'];
 
-	if(empty($yotpo_settings['app_key'])) {
-		wpsc_yotpo_display_message('Set your API key in order the Yotpo plugin to work correctly', false);			
-	}
+    if(empty($yotpo_settings['app_key'])) {
+        if ($success_type == 'b2c') {
+            wpsc_yotpo_display_message('We have sent you a confirmation email. Please check and click on the link to get your app key and secret token to fill out below.', true);
+        } else {
+            wpsc_yotpo_display_message('Set your API key in order the Yotpo plugin to work correctly', false);
+        }
+    }
 	$google_customize_tracking_params = '%253Futm_source%253Dyotpo_plugin_wp_ecommerce%2526utm_medium%253Dheader_link%2526utm_campaign%253Dwp_ecommerce_customize_link';
 	$google_moderate_tracking_params = '%253Futm_source%253Dyotpo_plugin_wp_ecommerce%2526utm_medium%253Dheader_link%2526utm_campaign%253Dwp_ecommerce_moderate_link';
 	if (!empty($yotpo_settings['app_key']) && !empty($yotpo_settings['secret'])) {
@@ -79,8 +83,8 @@ function wpsc_display_yotpo_settings() {
 	else {
 		$customize_link = "<a href='https://www.yotpo.com/?login=true".$google_customize_tracking_params."' target='_blank'>Yotpo Dashboard.</a>";
 		$moderate_link = "<a href='https://www.yotpo.com/?login=true".$google_moderate_tracking_params."' target='_blank'>moderate page.</a>";
-	}	
-	$read_only = isset($_POST['log_in_button']) ? '' : 'readonly';
+	}
+    $read_only = isset($_POST['log_in_button']) || $success_type == 'b2c' ? '' : 'readonly';
 	$cradentials_location_explanation = isset($_POST['log_in_button']) 	? "<tr valign='top'>  	
 		             														<th scope='row'><p class='description'>To get your api key and secret token <a href='https://www.yotpo.com/?login=true' target='_blank'>log in here</a> and go to your account settings.</p></th>
 	                 		                  							   </tr>" : '';		
@@ -293,7 +297,9 @@ function wpsc_proccess_yotpo_register() {
         		}
         	}
         	else {
-        		
+                if ($response == 'b2c') {
+                    return $response;
+                }
         	}
         }
         catch (Exception $e) {
