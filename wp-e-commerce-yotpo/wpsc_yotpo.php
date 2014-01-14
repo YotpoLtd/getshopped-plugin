@@ -130,7 +130,7 @@ function wpsc_yotpo_load_js() {
 	}
 }
 
-function wpsc_yotpo_show_qa_buttomline() {
+function wpsc_yotpo_show_qa_bottomline() {
     $yotpo_settings = get_option('yotpo_settings', wpsc_yotpo_get_default_settings());
     echo "<div class='yotpo QABottomLine'
          data-appkey='".$yotpo_settings['app_key']."'
