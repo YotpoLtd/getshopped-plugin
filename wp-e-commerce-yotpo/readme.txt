@@ -95,4 +95,7 @@ Yes. To connect your social accounts to Yotpo, just log into yotpo.com, and clic
 = 1.0.2 - 10/07/2013 =
 * Initial Release.
 
+= 1.0.3 - 02/06/2014 =
+* Update to to the new Reviews Widget.
+
  

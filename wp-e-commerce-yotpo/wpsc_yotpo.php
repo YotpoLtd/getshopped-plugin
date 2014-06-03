@@ -3,7 +3,7 @@
 	Plugin Name: Yotpo Social Reviews for WP e-Commerce
 	Description: Yotpo Social Reviews helps WP e-Commerce store owners generate a ton of reviews for their products. Yotpo is the only solution which makes it easy to share your reviews automatically to your social networks to gain a boost in traffic and an increase in sales.
 	Author: Yotpo
-	Version: 1.0.2
+	Version: 1.0.3
 	Author URI: http://www.yotpo.com?utm_source=yotpo_plugin_wp_ecommerce&utm_medium=plugin_page_link&utm_campaign=wp_ecommerce_plugin_page_link
 	Plugin URI: http://www.yotpo.com?utm_source=yotpo_plugin_wp_ecommerce&utm_medium=plugin_page_link&utm_campaign=wp_ecommerce_plugin_page_link
  */
@@ -121,12 +121,14 @@ function wpsc_yotpo_uninstall() {
 }
 
 function wpsc_yotpo_show_widget() {
-	echo wpsc_yotpo_get_template('reviews');
+	echo wpsc_yotpo_get_template('yotpo-main-widget');
 }
 
 function wpsc_yotpo_load_js() {
 	if (is_plugin_active('wp-e-commerce/wp-shopping-cart.php')) {
         wp_enqueue_script( 'yquery', plugins_url('assets/js/headerScript.js', __FILE__) ,null,null);
+        $settings = get_option('yotpo_settings',wpsc_yotpo_get_default_settings());
+        wp_localize_script('yquery', 'yotpo_settings', array('app_key' => $settings['app_key']));
 	}
 }
 
