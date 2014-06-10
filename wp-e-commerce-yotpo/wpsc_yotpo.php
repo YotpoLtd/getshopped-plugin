@@ -167,15 +167,11 @@ function wpsc_yotpo_get_template($type) {
 
 		}	
 		$yotpo_div = "<div class='yotpo ".$type."' 
-					data-appkey='".$yotpo_settings['app_key']."'
-					data-domain='".$domain."'
 					data-product-id='".$productId."'
-					data-product-models='".$productSku."'
 					data-name='".$productTitle."' 
 					data-url='".$productUrl."' 
 					data-image-url='".wpsc_yotpo_product_image_url($productId)."' 
 					data-description='".$productDescription."' 
-					data-bread-crumbs=''
 					data-lang='".$yotpoLanguageCode."'></div>";
 		return $yotpo_div;
 	}
