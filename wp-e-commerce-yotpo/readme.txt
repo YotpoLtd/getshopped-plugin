@@ -96,6 +96,6 @@ Yes. To connect your social accounts to Yotpo, just log into yotpo.com, and clic
 * Initial Release.
 
 = 1.0.3 - 02/06/2014 =
-* Update to to the new Reviews Widget.
+* This version includes the latest version of Yotpo's Reviews Widget. It features an updated, cleaner UI, faster performance and more customization options.
 
  
