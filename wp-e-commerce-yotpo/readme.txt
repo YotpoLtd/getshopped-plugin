@@ -1,4 +1,4 @@
-=== Yotpo Social Reviews for WP E-Commerce ===
+=== Yotpo Reviews for WP E-Commerce ===
 Contributors: Yotpo
 Tags: reviews, social reviews, WP E-Commerce, WP E-Commerce reviews, WP E-Commerce product reviews, WP E-Commerce extensions, WP E-Commerce plugins, WP E-Commerce addons, WP E-Commerce add-ons, yotpo, yotpo reviews, yotpo social reviews
 Requires at least: 3.5.1
@@ -7,7 +7,7 @@ Stable tag: 1.1.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Generate tons of product reviews for your WP E-Commerce site with Yotpo Social Reviews
+Build your shoppers confidence with trustworthy reviews and customer content. Yotpo is free and getting started takes under 5 minutes.
 
 == Description ==
 Trusted by over 150,000+ businesses, the Yotpo WP E-Commerce review plugin helps you generate a ton of customer content, like reviews, photos and Q&A, in order to boost traffic and sales. 
@@ -19,7 +19,7 @@ Trusted by over 150,000+ businesses, the Yotpo WP E-Commerce review plugin helps
 
 https://www.youtube.com/watch?v=WoVjHkgQS2A
 
-= Generate More Product Reviews =
+= Generate More Product Reviews = 
 
 Yotpo’s signature in-mail form lets buyers leave reviews from within the body of review requests emails. As a result, Yotpo users typically generate 9x more product reviews & site reviews than generated with other reviews solutions.
 
