@@ -52,7 +52,7 @@ All Yotpo’s features are made with mobile in mind. When we send a review reque
 
 == INSTALLATION ==
 
-Installing Yotpo WooCommerce review plugin is plug and play. It should just take a few minutes. [Please refer to this document](https://support.yotpo.com/hc/en-us/articles/204101596-Woocommerce-Manual) for the most up to date setup instructions. 
+Installing Yotpo WP E-commerce review plugin is plug and play. It should just take a few minutes. [Please refer to this document](https://support.yotpo.com/hc/en-us/categories/200219216-Yotpo-Guides) for the most up to date setup instructions. 
 
 == Frequently Asked Questions ==
 
